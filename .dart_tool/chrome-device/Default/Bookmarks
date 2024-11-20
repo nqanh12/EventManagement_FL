@@ -1,0 +1,116 @@
+{
+   "checksum": "5cd66b2057b20dfda664007830782ca4",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13282200139558262",
+            "date_last_used": "0",
+            "guid": "69bebf64-474b-4d35-9184-abef4ce09732",
+            "id": "10",
+            "name": "Hướng dẫn sử dụng 3 cách tính giai thừa trong C",
+            "type": "url",
+            "url": "https://www.devpro.edu.vn/cach-tinh-giai-thua-trong-c"
+         }, {
+            "date_added": "13290516512115475",
+            "date_last_used": "0",
+            "guid": "aebebe6a-9623-40be-b784-06f0d46b8ccc",
+            "id": "11",
+            "name": "Venge.io",
+            "type": "url",
+            "url": "https://venge.io/?fbclid=IwAR0vxJY0m4psvi4c2tWwu_j9_0VIolqPQf7FoWWJXh9E8z0282yY7Q0qxL4#FD39FF"
+         }, {
+            "date_added": "13296635930046213",
+            "date_last_used": "0",
+            "guid": "3f36cc5f-93d0-474b-b500-4c8b642f6136",
+            "id": "12",
+            "name": "Haxball Play",
+            "type": "url",
+            "url": "https://www.haxball.com/play"
+         }, {
+            "date_added": "13298109567458528",
+            "date_last_used": "0",
+            "guid": "ec15a3d1-6ec7-4343-9e2a-3a98d4700c4a",
+            "id": "13",
+            "name": "The Name of Life [From \"Spirited Away\"] (Piano Version) - YouTube",
+            "type": "url",
+            "url": "https://www.youtube.com/watch?v=BwheWzkMhGY"
+         }, {
+            "date_added": "13333827853772947",
+            "date_last_used": "0",
+            "guid": "c82d7eed-198a-4538-aabd-5a118ea4553b",
+            "id": "14",
+            "name": "Yugi H5",
+            "type": "url",
+            "url": "https://id.yugih5.com/?code=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbl9tZXRob2QiOiJmYWNlYm9vayIsInN0cl9yYW5kIjoiWk1KSFBvdVRLY2o1czVFVXZSS2Zyc1JpQ1BYUG9KWUozN1VIQXpNaXJWV2lPSmJUbmZiV080UXVva3I5V2M2QWhyNTlTYjE1MXU1SnloY1cxYXhYeDJRZzYzOUEwblVzWFEyQlNvM1dGOVNVaVBmWVdCNkZ1dTN4ME1URnBNUkkifQ.ejCDCqqX3oAmeCubZM7-YQsWuxaknMJ5QIrHLPnt8EE#_=_"
+         }, {
+            "date_added": "13338888804339322",
+            "date_last_used": "0",
+            "guid": "46337e04-220c-4be7-bbe0-64314ab7ca2e",
+            "id": "15",
+            "name": "Free VPN for Chrome - VPN Proxy VeePN - Cửa hàng Chrome trực tuyến",
+            "type": "url",
+            "url": "https://chrome.google.com/webstore/detail/free-vpn-for-chrome-vpn-p/majdfhpaihoncoakbjgbdhglocklcgno/related?utm_source=ext_sidebar&hl=vi"
+         } ],
+         "date_added": "13375526531610568",
+         "date_last_used": "0",
+         "date_modified": "13338888804339322",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Bookmarks bar",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "date_added": "13354297838014958",
+            "date_last_used": "0",
+            "guid": "34e44e95-cf6a-47d1-8659-b306feeb4fa2",
+            "id": "7",
+            "name": "Viettel",
+            "type": "url",
+            "url": "http://data.viettel.vn/"
+         }, {
+            "date_added": "13357302499550208",
+            "date_last_used": "0",
+            "guid": "d3f49c2f-8996-4477-b7b4-e6d02b20e7dc",
+            "id": "8",
+            "name": "Duolingo - The world's best way to learn English",
+            "type": "url",
+            "url": "https://www.duolingo.com/learn"
+         }, {
+            "date_added": "13360238924069791",
+            "date_last_used": "0",
+            "guid": "959d3876-a0c1-425d-90c2-244eabfb81b3",
+            "id": "9",
+            "name": "Facebook",
+            "type": "url",
+            "url": "https://web.facebook.com/"
+         } ],
+         "date_added": "13375526531610571",
+         "date_last_used": "0",
+         "date_modified": "13360238924069791",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other bookmarks",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [ {
+            "date_added": "13267899036602431",
+            "date_last_used": "0",
+            "guid": "d6a0fa12-5f07-424d-ab83-a1112397832e",
+            "id": "6",
+            "name": "SMAS - Đăng nhập hệ thống",
+            "type": "url",
+            "url": "https://smas.edu.vn/Home/LogOn"
+         } ],
+         "date_added": "13375526531610573",
+         "date_last_used": "0",
+         "date_modified": "13267899036602431",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile bookmarks",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}

@@ -1,0 +1,76 @@
+// add_account_dialog.dart
+import 'package:flutter/material.dart';
+
+class FormDialog extends StatefulWidget {
+  const FormDialog({super.key});
+
+  @override
+  FormDialogState createState() => FormDialogState();
+}
+
+class FormDialogState extends State<FormDialog> {
+  final _userNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+
+  @override
+  void dispose() {
+    _userNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Thêm tài khoản mới'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _userNameController,
+            decoration: InputDecoration(labelText: 'Tài khoản'),
+          ),
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(labelText: 'Email'),
+          ),
+          TextField(
+            controller: _passwordController,
+            obscureText: !_isPasswordVisible,
+            decoration: InputDecoration(
+              labelText: 'Mật khẩu',
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Hủy'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // Handle account creation logic here
+            Navigator.of(context).pop();
+          },
+          child: Text('Thêm'),
+        ),
+      ],
+    );
+  }
+}
