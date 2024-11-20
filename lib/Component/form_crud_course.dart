@@ -28,12 +28,28 @@ class FormAddCourseDialogState extends State<FormAddCourseDialog> {
     _courseNameController.dispose();
     super.dispose();
   }
-
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang tạo khóa học mới, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _saveCourse() async {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context);
     try {
       String courseName = _courseNameController.text;
 
@@ -44,6 +60,7 @@ class FormAddCourseDialogState extends State<FormAddCourseDialog> {
 
       // Create new course
       await CourseService().createCourse(courseName);
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Thành công', 'Thêm khóa thành công', Icons.check_circle, Colors.green);
 
       Future.delayed(Duration(milliseconds: 800), () {
@@ -51,6 +68,7 @@ class FormAddCourseDialogState extends State<FormAddCourseDialog> {
         widget.callback();
       });
     } catch (e) {
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Mã khóa đã tồn tại trong hệ thống ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {

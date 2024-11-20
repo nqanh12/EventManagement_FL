@@ -10,7 +10,8 @@ import 'package:go_router/go_router.dart';
 class FeedbackListScreen extends StatefulWidget {
   final String eventId;
   final String eventName;
-  const FeedbackListScreen({super.key, required this.eventId, required this.eventName});
+  final DateTime? dateEnd;
+  const FeedbackListScreen({super.key, required this.eventId, required this.eventName, required this.dateEnd});
 
   @override
   FeedbackListScreenState createState() => FeedbackListScreenState();
@@ -41,7 +42,7 @@ class FeedbackListScreenState extends State<FeedbackListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            context.go('/participant_list/${widget.eventId}/${widget.eventName}');
+            context.go('/participant_list/${widget.eventId}/${widget.eventName}/${widget.dateEnd}');
           },
         ),
       ),

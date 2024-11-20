@@ -52,7 +52,7 @@ class InfoAccountService {
       if (data['code'] == 1000) {
         return {
           'fullName': data['result']['full_Name'],
-          'class_id': data['result']['class_id'],
+          'classId': data['result']['classId'],
         };
       } else {
         throw Exception('Failed to load full name and class');

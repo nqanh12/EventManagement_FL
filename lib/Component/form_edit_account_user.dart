@@ -73,12 +73,28 @@ class FormEditAccountDialogState extends State<FormEditAccountUserDialog> {
     _addressController.dispose();
     super.dispose();
   }
-
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang tạo tài khoản, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _updateUser() async {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context);
     try {
       String userName = _userNameController.text;
       String email = _emailController.text;
@@ -114,16 +130,16 @@ class FormEditAccountDialogState extends State<FormEditAccountUserDialog> {
         address: address,
         roles: [role],
       );
-
+      Navigator.of(context).pop();
       // ignore: use_build_context_synchronously
       showWarningDialog(context, 'Thành công', 'Cập nhật tài khoản thành công', Icons.check_circle, Colors.green);
       Future.delayed(Duration(milliseconds: 800), () {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
         Navigator.of(context).pop();
         widget.callback();
       });
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Failed to update user: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {
@@ -210,6 +226,7 @@ class FormEditAccountDialogState extends State<FormEditAccountUserDialog> {
               ),
             ),
             const SizedBox(height: 10),
+            if (widget.roles.contains('MANAGER_DEPARTMENT') || widget.roles.contains('MANAGER_ENTIRE'))
             DropdownButtonFormField<String>(
               value: _selectedRole,
               onChanged: (String? newValue) {

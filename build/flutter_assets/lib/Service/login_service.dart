@@ -25,6 +25,7 @@ class LoginService {
           // Save token to shared preferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', responseData['result']['token']);
+          await prefs.setString('role', role);
           await prefs.setString('departmentId', departmentId);
       }
       return responseData;
@@ -48,8 +49,34 @@ class LoginService {
         // Remove token from shared preferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
+        await prefs.remove('role');
         await prefs.remove('departmentId');
       }
+      return responseData;
+    } else {
+      throw Exception('Failed to logout: ${response.statusCode}');
+    }
+  }
+
+  Future<void> getPassword(String userName, String password) async {
+    final url = Uri.parse('${baseUrl}api/users/getPassword');
+     // Replace with your actual Bearer token
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'userName': userName,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
       return responseData;
     } else {
       throw Exception('Failed to logout: ${response.statusCode}');

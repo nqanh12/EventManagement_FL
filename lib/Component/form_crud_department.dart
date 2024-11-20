@@ -31,12 +31,28 @@ class FormEditDepartmentDialogState extends State<FormEditDepartmentDialog> {
     _departmentNameController.dispose();
     super.dispose();
   }
-
+  void _showLoadingDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text(message),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _saveDepartment() async {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context, widget.department == null ? "Đang tạo khoa mới, vui lòng đợi..." : "Đang cập nhật khoa, vui lòng đợi...");
     try {
       String departmentName = _departmentNameController.text;
 
@@ -46,30 +62,25 @@ class FormEditDepartmentDialogState extends State<FormEditDepartmentDialog> {
       }
 
       if (widget.department == null) {
-        // Create new department
         await DepartmentService().createDepartment(departmentName);
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
         showWarningDialog(context, 'Thành công', 'Thêm khoa thành công', Icons.check_circle, Colors.green);
       } else {
-        // Check if the new data is different from the initial data
         if (departmentName == widget.department!.departmentName) {
           showWarningDialog(context, 'Lỗi', 'Dữ liệu không thay đổi!', Icons.warning, Colors.red);
           return;
         }
-
-        // Update existing department
         await DepartmentService().updateDepartment(widget.department!.id, departmentName);
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
         showWarningDialog(context, 'Thành công', 'Cập nhật khoa thành công', Icons.check_circle, Colors.green);
       }
 
       Future.delayed(Duration(milliseconds: 800), () {
-        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
         widget.callback();
       });
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Mã khoa đã tồn tại trong hệ thống ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {
@@ -82,7 +93,7 @@ class FormEditDepartmentDialogState extends State<FormEditDepartmentDialog> {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context, "Đang xóa khoa, vui lòng đợi...");
     try {
       final showLogDelete = ShowLogDeleteState();
       await showLogDelete.showConfirmationDialog(
@@ -90,13 +101,14 @@ class FormEditDepartmentDialogState extends State<FormEditDepartmentDialog> {
         title: 'Xác nhận xóa',
         content: 'Bạn có chắc chắn muốn xóa khoa này không?',
         onConfirm: () async {
-          Navigator.of(context).pop();
           await DepartmentService().deleteDepartment(widget.department!.id);
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
           widget.callback();
         },
       );
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Failed to delete department: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {

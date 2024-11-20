@@ -16,6 +16,8 @@ class Assets {
   static const String componentEventCard = 'lib/Component/event_card.dart';
   static const String componentExcelDialog = 'lib/Component/excel_dialog.dart';
   static const String componentFormAddAccountAdmin = 'lib/Component/form_add_account_admin.dart';
+  static const String componentFormAddAccountManagement = 'lib/Component/form_add_account_management.dart';
+  static const String componentFormAddAccountManagerDepartment = 'lib/Component/form_add_account_manager_department.dart';
   static const String componentFormAddAccountUser = 'lib/Component/form_add_account_user.dart';
   static const String componentFormAddEvent = 'lib/Component/form_add_event.dart';
   static const String componentFormAddEventDepartment = 'lib/Component/form_add_event_department.dart';
@@ -26,6 +28,7 @@ class Assets {
   static const String componentFormEditAccountUser = 'lib/Component/form_edit_account_user.dart';
   static const String componentFormEditEvent = 'lib/Component/form_edit_event.dart';
   static const String componentFormEditEventDepartment = 'lib/Component/form_edit_event_department.dart';
+  static const String componentFormResetPassword = 'lib/Component/form_reset_password.dart';
   static const String componentFormType = 'lib/Component/form_type.dart';
   static const String componentIconCrud = 'lib/Component/icon_crud.dart';
   static const String componentListtile = 'lib/Component/listtile.dart';
@@ -39,6 +42,7 @@ class Assets {
   static const String componentTextFontList = 'lib/Component/text_font_list.dart';
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String imagesAdd = 'assets/images/add.png';
+  static const String imagesAddManager = 'assets/images/add_manager.png';
   static const String imagesAnh4k = 'assets/images/anh4k.png';
   static const String imagesAnhnen = 'assets/images/anhnen.png';
   static const String imagesAvatar = 'assets/images/avatar.png';
@@ -48,12 +52,15 @@ class Assets {
   static const String imagesDelete = 'assets/images/delete.png';
   static const String imagesEdit = 'assets/images/edit.png';
   static const String imagesExcel = 'assets/images/excel.png';
+  static const String imagesImport = 'assets/images/import.png';
   static const String imagesImportExcel = 'assets/images/importExcel.png';
   static const String imagesLogo = 'assets/images/logo.png';
   static const String imagesPerson = 'assets/images/person.png';
+  static const String imagesResetPassword = 'assets/images/reset_password.png';
   static const String libComponentDecriptionText = 'lib/Component/decription_text.dart~';
-  static const String libComponentFormAddEventDepartment = 'lib/Component/form_add_event_department.dart~';
+  static const String libComponentFormEditAccount = 'lib/Component/form_edit_account.dart~';
   static const String libMain = 'lib/main.dart';
+  static const String libScreenDashBoardEntire = 'lib/Screen/dash_board_entire.dart~';
   static const String libServiceCourseService = 'lib/Service/course_service.dart~';
   static const String libServiceDepartmentService = 'lib/Service/department_service.dart~';
   static const String screenChangeHistoryPage = 'lib/Screen/change_history_page.dart';

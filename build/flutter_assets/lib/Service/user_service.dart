@@ -56,4 +56,42 @@ class UserService {
       throw Exception('Failed to delete users for event');
     }
   }
+
+  Future<void> calculateTrainingPoints(String evenId,String userName , String classId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token == null || token.isEmpty) {
+      throw Exception('Token is missing');
+    }
+
+    String bearerToken = 'Bearer $token';
+    String url = '${baseUrl}api/users/calculateTrainingPointsForCurrentSemester/$evenId';
+
+    List<Map<String, String>> requestBody = [
+      {
+        "userName": userName,
+        "classId": classId,
+      }
+    ];
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Authorization': bearerToken,
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(requestBody),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['code'] == 1000) {
+        print('Success: ${data['result']}');
+      } else {
+        throw Exception('Failed to calculate training points: ${data['code']}');
+      }
+    } else {
+      throw Exception('Failed to call API: ${response.statusCode}');
+    }
+  }
 }

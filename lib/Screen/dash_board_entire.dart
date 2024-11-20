@@ -5,6 +5,7 @@ import 'package:eventmanagement/Component/button_crud.dart';
 import 'package:eventmanagement/Component/diglog_load.dart';
 import 'package:eventmanagement/Component/event_card.dart';
 import 'package:eventmanagement/Component/excel_dialog.dart';
+import 'package:eventmanagement/Component/form_add_account_management.dart';
 import 'package:eventmanagement/Component/form_edit_account.dart';
 import 'package:eventmanagement/Component/icon_crud.dart';
 import 'package:eventmanagement/Component/listtile.dart';
@@ -174,8 +175,8 @@ class DashboardScreenState extends State<DashboardScreen> {
     'Tất cả': 'Tất cả',
     'ADMIN_DEPARTMENT': 'Quản lí khoa',
     'USER': 'Sinh viên',
-    'MANAGER_ENTIRE': 'Quản lí sự kiện toàn trường',
-    'MANAGER_DEPARTMENT': 'Quản lí sự kiện khoa',
+    'MANAGER_ENTIRE': 'Quét QR cho siện kiện toàn trường',
+    'MANAGER_DEPARTMENT': 'Quét QR cho sự kiện khoa',
   };
   void _navigateToPage(int index) {
     setState(() {
@@ -217,12 +218,13 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   List<Users> _filterUsers() {
-      String searchQuery = _searchController.text.trim().toLowerCase();
-      return _users.where((user) {
+    String searchQuery = _searchController.text.trim().toLowerCase();
+    return _users.where((user) {
       bool matchesFullName = user.fullName.toLowerCase().contains(searchQuery);
       bool matchesDepartment = _selectedDepartment == 'Tất cả' || (user.departmentId.startsWith(_selectedDepartment));
-      bool matchesCourse = _selectedCourse == 'Toàn Khóa' ||
-          user.classId.substring(0, 2) == _selectedCourse.substring(1);
+      bool matchesCourse = (_selectedCourse == 'Toàn Khóa' ||
+          (user.classId.length >= 2 && _selectedCourse.length >= 2 &&
+              (user.classId.startsWith('0') ? user.classId[1] == _selectedCourse[1] : user.classId.substring(0, 2) == _selectedCourse.substring(1))));
       bool matchesRole = _selectedRole == 'Tất cả' || (user.roles.contains(_selectedRole));
       bool notAdmin = !user.roles.contains('ADMIN_ENTIRE');
       return matchesFullName && matchesDepartment && matchesRole && notAdmin && matchesCourse;
@@ -230,14 +232,6 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showOverlay(BuildContext context, Users user, Offset position) {
-    String roleText;
-    if (user.roles.contains('ADMIN_DEPARTMENT')) {
-      roleText = 'Quản lí khoa';
-    } else if (user.roles.contains('MANAGER')) {
-      roleText = 'Quản lí sự kiện';
-    } else {
-      roleText = 'Sinh viên';
-    }
 
     String trainingPoints = user.trainingPoint.map((tp) {
       return '\n- Học kỳ 1: ${tp.semesterOne}\n- Học kỳ 2: ${tp.semesterTwo}\n- Học kỳ 3: ${tp.semesterThree}\n- Học kỳ 4: ${tp.semesterFour}\n- Học kỳ 5: ${tp.semesterFive}\n- Học kỳ 6: ${tp.semesterSix}\n- Học kỳ 7: ${tp.semesterSeven}\n- Học kỳ 8: ${tp.semesterEight}';
@@ -278,40 +272,43 @@ class DashboardScreenState extends State<DashboardScreen> {
                   fontSize: 16,
                   color: Colors.black,
                 ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('ADMIN_DEPARTMENT') && !user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Tổng số sự kiện đã đăng ký: ${user.totalEventsRegistered}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('ADMIN_DEPARTMENT') && !user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Điểm rèn luyện: $trainingPoints',
                     fontSize: 16,
                     color: Colors.black,
                   ),
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Giới tính: ${user.gender}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Email: ${user.email}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Sđt: ${user.phone?.isNotEmpty == true ? user.phone : 'Chưa cập nhật'}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Địa chỉ: ${user.address?.isNotEmpty == true ? user.address : 'Chưa cập nhật'}',
                     fontSize: 16,
                     color: Colors.black,
                   ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('ADMIN_DEPARTMENT') && !user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Lớp: ${user.classId}',
                     fontSize: 16,
@@ -325,12 +322,31 @@ class DashboardScreenState extends State<DashboardScreen> {
     );
     Overlay.of(context).insert(_overlayEntry!);
   }
-
+  void _showAddAccountManagerDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FormAddAccountManagerEntireDialog(
+          callback: () {
+            _fetchUsers();
+          },
+        );
+      },
+    );
+  }
   void _hideOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
   }
-
+  void exampleFunction(List<String> items, int index) {
+    if (index >= 0 && index < items.length) {
+      // Access the item at the valid index
+      print(items[index]);
+    } else {
+      // Handle the invalid index case
+      print('Invalid index: $index');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -612,6 +628,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                           ),
                           Row(
                             children: [
+                              CustomElevatedButtonCRUD(onPressed: _showAddAccountManagerDialog, color: Colors.white, icon: "assets/images/add_manager.png", textColor: Colors.green,),
                               FilePickerButton(),
                               CustomElevatedButtonCRUD(onPressed: _showAddAccountDialog, color: Colors.white, icon: "assets/images/add.png", textColor: Colors.green,),
                             ],
@@ -658,10 +675,10 @@ class DashboardScreenState extends State<DashboardScreen> {
                                             } else if (user.roles.contains('ADMIN_DEPARTMENT')) {
                                               roleText = 'Quản lí khoa';
                                             } else if (user.roles.contains('MANAGER_DEPARTMENT')) {
-                                              roleText = 'Quản lí sự kiện khoa';
+                                              roleText = 'Quét QR cho sự kiện khoa';
                                             } else
                                             if (user.roles.contains('MANAGER_ENTIRE')) {
-                                              roleText = 'Quản lí sự kiện toàn trường';
+                                              roleText = 'Quét QR cho sự kiện toàn trường';
                                             } else {
                                               roleText = 'Sinh viên';
                                             }
@@ -713,6 +730,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                                                   trailing: Row(
                                                     mainAxisSize: MainAxisSize.min,
                                                     children: [
+                                                      if(!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                                                       IconCRUD(
                                                         onPressed: () {
                                                           _showEditAccountDialog(user);

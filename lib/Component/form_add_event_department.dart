@@ -50,7 +50,23 @@ class FormAddEventDepartmentDialogState extends State<FormAddEventDepartmentDial
     _dateEndController.dispose();
     super.dispose();
   }
-
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang tạo sự kiện, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _fetchCourses() async {
     try {
       final courses = await CourseService().getAllCoursesFilter();
@@ -67,7 +83,7 @@ class FormAddEventDepartmentDialogState extends State<FormAddEventDepartmentDial
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context);
     try {
       String name = _nameController.text;
       int capacity = int.parse(_capacityController.text);
@@ -85,8 +101,17 @@ class FormAddEventDepartmentDialogState extends State<FormAddEventDepartmentDial
         return;
       }
 
-        DateTime dateStart = DateFormat('dd/MM/yyyy HH:mm').parse(dateStartText).subtract(const Duration(hours: 7));
-        DateTime dateEnd = DateFormat('dd/MM/yyyy HH:mm').parse(dateEndText).subtract(const Duration(hours: 7));
+      DateTime dateStart = DateFormat('dd/MM/yyyy HH:mm').parse(dateStartText).subtract(const Duration(hours: 7));
+      DateTime dateEnd = DateFormat('dd/MM/yyyy HH:mm').parse(dateEndText).subtract(const Duration(hours: 7));
+
+      if (dateEnd.isBefore(dateStart)) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        showWarningDialog(context, 'Lỗi', 'Ngày kết thúc phải lớn hơn ngày bắt đầu', Icons.warning, Colors.red);
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
       List<Courses> selectedCourses = _courses.where((course) => _selectedCourses.contains(course.courseId)).toList();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -109,15 +134,15 @@ class FormAddEventDepartmentDialogState extends State<FormAddEventDepartmentDial
       await NotificationService().sendNotificationToDepartment(departmentId, 'Sự kiện ${event.name} sắp diễn ra mau vào đăng kí nhanh nào !!! .');
       await CrudEventService().createEvent(event);
 
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Thành công', 'Tạo sự kiện thành công', Icons.check_circle, Colors.green);
       Future.delayed(Duration(milliseconds: 800), () {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
         Navigator.of(context).pop();
         widget.callback();
       });
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Failed to create event: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {

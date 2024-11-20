@@ -90,12 +90,28 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
       showWarningDialog(context, 'Lỗi', 'Failed to load courses: ${e.toString()}', Icons.warning, Colors.red);
     }
   }
-
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang cập nhật sự kiện, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _editEvent() async {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context);
     try {
       String name = _nameController.text;
       int capacity = int.parse(_capacityController.text);
@@ -117,6 +133,14 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
       DateTime dateStart = DateFormat('dd/MM/yyyy HH:mm').parse(dateStartText).subtract(const Duration(hours: 7));
       DateTime dateEnd = DateFormat('dd/MM/yyyy HH:mm').parse(dateEndText).subtract(const Duration(hours: 7));
 
+      if (dateEnd.isBefore(dateStart) || dateEnd.isAtSameMomentAs(dateStart)) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        showWarningDialog(context, 'Lỗi', 'Ngày kết thúc phải lớn hơn ngày bắt đầu và không được bằng nhau', Icons.warning, Colors.red);
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
       List<Courses> selectedCourses = _courses.where((course) => _selectedCourses.contains(course.courseId)).toList();
 
       final event = Event(
@@ -138,6 +162,7 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
       await CrudEventService().updateEvent(widget.event.eventId, event);
       await NotificationService().sendNotificationToDepartment(departmentId, 'Sự kiện ${event.name} được thay đổi .');
       if (!mounted) return;
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Thành công', 'Cập nhật sự kiện thành công', Icons.check_circle, Colors.green);
       Future.delayed(Duration(milliseconds: 800), () {
         if (!mounted) return;
@@ -146,6 +171,7 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
       });
     } catch (e) {
       if (!mounted) return;
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Failed to update event: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       if (!mounted) return;
@@ -155,7 +181,9 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
     }
   }
 
-  Widget _buildDateTimePicker(BuildContext context, TextEditingController controller, String label) {
+  Widget _buildDateTimePicker(BuildContext context, TextEditingController controller, String label, {bool isStartDate = false}) {
+    bool isPastStartDate = isStartDate && DateTime.now().isAfter(widget.event.dateStart.subtract(const Duration(hours: 7)));
+
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -164,7 +192,7 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
       ),
       readOnly: true,
-      onTap: () async {
+      onTap: isPastStartDate ? null : () async {
         DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
@@ -247,7 +275,7 @@ class FormEditEventDialogState extends State<FormEditEventDialog> {
               prefixIcon: Icons.person,
             ),
             const SizedBox(height: 10),
-            _buildDateTimePicker(context, _dateStartController, 'Ngày bắt đầu (dd/MM/yyyy HH:mm)'),
+            _buildDateTimePicker(context, _dateStartController, 'Ngày bắt đầu (dd/MM/yyyy HH:mm)', isStartDate: true),
             const SizedBox(height: 10),
             _buildDateTimePicker(context, _dateEndController, 'Ngày kết thúc (dd/MM/yyyy HH:mm)'),
             const SizedBox(height: 10),

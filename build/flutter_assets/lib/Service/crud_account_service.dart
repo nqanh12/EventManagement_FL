@@ -87,6 +87,48 @@ class CrudAccountService {
       throw Exception('Failed to create user: ${response.reasonPhrase}');
     }
   }
+  Future<Users?> createManager({
+    required String userName,
+    required String password,
+    required String fullName,
+    required String email,
+    required String gender,
+    required String classId,
+    required List<String> roles,
+  }) async {
+    final url = Uri.parse('${_baseUrl}createManager');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    final departmentId = prefs.getString('departmentId') ?? '';
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'userName': userName,
+        'password': password,
+        'fullName': fullName,
+        'email': email,
+        'departmentId': departmentId,
+        'gender': gender,
+        'class_id': classId,
+        'roles': roles,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      if (responseData['code'] == 1000) {
+        return Users.fromJson(responseData['result']);
+      } else {
+        throw Exception('Failed to create user: ${responseData['message']}');
+      }
+    } else {
+      throw Exception('Failed to create user: ${response.reasonPhrase}');
+    }
+  }
 
   Future<Users?> updateAdmin({
     required String userName,

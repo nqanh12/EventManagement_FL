@@ -4,7 +4,7 @@ import 'package:eventmanagement/Screen/personal_infomation.dart';
 import 'package:eventmanagement/Service/info_account.dart';
 import 'package:flutter/material.dart';
 import 'package:eventmanagement/Class/user.dart';
-
+import 'package:go_router/go_router.dart';
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
 
@@ -65,6 +65,13 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           final user = snapshot.data!;
                           return Row(
                             children: [
+                              IconButton(onPressed: (){
+                                if (user.roles.contains('ADMIN_ENTIRE')) {
+                                  context.go('/dashboard');
+                                } else if (user.roles.contains('ADMIN_DEPARTMENT')) {
+                                  context.go('/dashboard_department');
+                                }
+                              }, icon: Icon(Icons.arrow_back_ios, color: Colors.white)),
                               CircleAvatar(
                                 radius: 40,
                                 backgroundImage: AssetImage("assets/images/avatar.png"), // Replace with actual image

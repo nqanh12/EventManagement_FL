@@ -78,8 +78,9 @@ class EventDepartmentManagementScreenState extends State<EventDepartmentManageme
   void _fetchCourses() async {
     try {
       final courses = await CourseService().getAllCourses();
+      final filter = courses.where((course) => course.courseId != 'K0').toList().reversed.toList();
       setState(() {
-        _courses = courses;
+        _courses = filter;
       });
     } catch (e) {
       // ignore: use_build_context_synchronously
@@ -306,7 +307,7 @@ void editEvent(Event event) {
                         child: DropdownButton<String>(
                           borderRadius: BorderRadius.circular(15),
                           value: _selectedYear,
-                          items: <String>['Tất cả', '2023', '2024', '2025']
+                          items: <String>['Tất cả', ...List.generate(DateTime.now().year - 2020, (index) => (DateTime.now().year - index).toString())]
                               .map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -323,7 +324,7 @@ void editEvent(Event event) {
                           underline: SizedBox(),
                           icon: Icon(Icons.arrow_drop_down, color: Colors.black),
                         ),
-                      ),
+                      ) ,
                       const SizedBox(width: 20),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -479,22 +480,19 @@ void editEvent(Event event) {
                                         onExit: (PointerExitEvent event) {
                                           _hideOverlay();
                                         },
-                                        child: Opacity(
-                                          opacity: isPastEvent ? 0.5 : 1.0,
+                                        child:Opacity(
+                                          opacity: event.dateStart.isAfter(DateTime.now()) || event.dateEnd.isBefore(DateTime.now()) ? 0.5 : 1.0,
                                           child: GestureDetector(
                                             onTap: () {
-                                              context.go('/participant_list/${event.eventId}/${event.name}');
+                                              context.go('/participant_list/${event.eventId}/${event.name}/${event.dateEnd}');
                                             },
                                             child: EventCard(
                                               listTile: ListTile(
-                                                leading: CircleAvatar(
-                                                  backgroundColor: Color(0xFF2E3034),
-                                                  child: CustomTextList(
-                                                    text: event.name[0],
-                                                    fontSize: 24,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                leading: Icon(
+                                                  Icons.circle,
+                                                  color: event.dateStart.isAfter(DateTime.now())
+                                                      ? Colors.yellow
+                                                      : (event.dateEnd.isBefore(DateTime.now()) ? Colors.red : Colors.green),
                                                 ),
                                                 title: CustomTextList(
                                                   text: event.name,

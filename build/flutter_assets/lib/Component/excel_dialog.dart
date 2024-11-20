@@ -1,5 +1,5 @@
 import 'package:eventmanagement/Component/button_crud.dart';
-import 'package:eventmanagement/Component/diglog_loading_import.dart';
+import 'package:eventmanagement/Component/diglog_warning.dart';
 import 'package:eventmanagement/Service/excel_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,28 @@ class FilePickerButton extends StatefulWidget {
 
 class FilePickerButtonState extends State<FilePickerButton> {
   String? _fileName;
+
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text("Đang tải..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,29 +55,25 @@ class FilePickerButtonState extends State<FilePickerButton> {
               });
               try {
                 if (fileBytes != null) {
-                  // ignore: use_build_context_synchronously
-                  showLoading(context, 'Tải file', 'Đang tải đọc dữ lên hệ thống...');
+                  showLoadingDialog(context);
                   try {
                     await ExcelService().createUsersFromExcelBytes(fileBytes);
-                  } catch (e) {
-                    // ignore: use_build_context_synchronously
-                    showLoading(context, 'Lỗi', 'Tải file thất bại: $e');
-                  } finally {
-                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop(); // Close the loading dialog
+                    showWarningDialog(context, "Success", "Tải file thành công", Icons.check_circle, Colors.green);
+                  } catch (e) {
+                    Navigator.of(context).pop(); // Close the loading dialog
+                    showWarningDialog(context, "Lỗi", "Tải file thất bại: $e", Icons.error, Colors.red);
                   }
                 }
               } catch (e) {
-                // ignore: use_build_context_synchronously
-                showLoading(context, 'Lỗi', 'Tải file thất bại: $e');
+                showWarningDialog(context, "Lỗi", "Tải file thất bại: $e", Icons.error, Colors.red);
               }
             } else {
-              // ignore: use_build_context_synchronously
-              showLoading(context, 'Hủy tải file', 'Đang thoát..',);
+              showWarningDialog(context, "Hủy tải file", "Đang thoát...", Icons.warning, Colors.orange);
             }
           },
           color: Colors.white,
-          icon: "assets/images/excel.png",
+          icon: "assets/images/import.png",
           textColor: Colors.green,
         ),
       ],

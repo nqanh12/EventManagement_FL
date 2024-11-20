@@ -28,11 +28,8 @@ class FormEditAccountDialogState extends State<FormEditAccountDialog> {
   List<Department> _departments = [];
   final List<String> _genders = ['Nam', 'Nữ'];
   final Map<String, String> roleLabels = {
-    'Tất cả': 'Tất cả',
-    'ADMIN_DEPARTMENT': 'Quản lí khoa',
-    'USER': 'Sinh viên',
-    'MANAGER_ENTIRE': 'Quản lí sự kiện toàn trường',
-    'MANAGER_DEPARTMENT': 'Quản lí sự kiện khoa',
+    'MANAGER_ENTIRE': 'Quét QR cho sự kiện toàn trường',
+    'MANAGER_DEPARTMENT': 'Quét QR cho sự kiện khoa',
   };
 
   @override
@@ -69,12 +66,28 @@ class FormEditAccountDialogState extends State<FormEditAccountDialog> {
       showWarningDialog(context, 'Lỗi', 'Failed to load departments: ${e.toString()}', Icons.warning, Colors.red);
     }
   }
-
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang tạo tài khoản, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _updateUser() async {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context);
     try {
       String userName = _userNameController.text;
       String email = _emailController.text;
@@ -108,16 +121,16 @@ class FormEditAccountDialogState extends State<FormEditAccountDialog> {
       );
 
       if (user != null) {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
         showWarningDialog(context, 'Thành công', 'Cập nhật tài khoản thành công', Icons.check_circle,Colors.green);
         Future.delayed(Duration(milliseconds: 800), () {
-          // ignore: use_build_context_synchronously
+          Navigator.of(context).pop();
           Navigator.of(context).pop();
           widget.callback();
         });
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Failed to update user: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {
@@ -150,7 +163,7 @@ class FormEditAccountDialogState extends State<FormEditAccountDialog> {
           children: [
             CustomTextField(
               controller: _userNameController,
-              labelText: 'Tài khoản(Mã giảng viên )',
+              labelText: 'Tài khoản',
               prefixIcon: Icons.person,
               enabled: false,
             ),
@@ -161,6 +174,7 @@ class FormEditAccountDialogState extends State<FormEditAccountDialog> {
               prefixIcon: Icons.person,
             ),
             const SizedBox(height: 10),
+            if (!widget.user.roles.contains('MANAGER_DEPARTMENT') && !widget.user.roles.contains('MANAGER_ENTIRE'))
             CustomTextField(
               controller: _emailController,
               labelText: 'Email',
@@ -187,27 +201,28 @@ class FormEditAccountDialogState extends State<FormEditAccountDialog> {
               ),
             ),
             const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: _selectedGender,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedGender = newValue!;
-                });
-              },
-              items: _genders.map<DropdownMenuItem<String>>((String gender) {
-                return DropdownMenuItem<String>(
-                  value: gender,
-                  child: CustomText(text: gender, fontSize: 16, color: Colors.black),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Giới tính',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+            if (!widget.user.roles.contains('MANAGER_DEPARTMENT') && !widget.user.roles.contains('MANAGER_ENTIRE'))
+              DropdownButtonFormField<String>(
+                value: _selectedGender,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedGender = newValue!;
+                  });
+                },
+                items: _genders.map<DropdownMenuItem<String>>((String gender) {
+                  return DropdownMenuItem<String>(
+                    value: gender,
+                    child: CustomText(text: gender, fontSize: 16, color: Colors.black),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'Giới tính',
+                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                ),
               ),
-            ),
             const SizedBox(height: 10),
-            if (!widget.user.roles.contains('ADMIN_ENTIRE') && !widget.user.roles.contains('ADMIN_DEPARTMENT'))
+            if (widget.user.roles.contains('MANAGER_DEPARTMENT') || widget.user.roles.contains('MANAGER_ENTIRE'))
               DropdownButtonFormField<String>(
                 value: _selectedRole,
                 onChanged: (String? newValue) {

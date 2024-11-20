@@ -4,8 +4,10 @@ import 'package:eventmanagement/Class/course.dart';
 import 'package:eventmanagement/Component/button_crud.dart';
 import 'package:eventmanagement/Component/diglog_load.dart';
 import 'package:eventmanagement/Component/event_card.dart';
+import 'package:eventmanagement/Component/form_add_account_manager_department.dart';
 import 'package:eventmanagement/Component/form_add_account_user.dart';
 import 'package:eventmanagement/Component/form_edit_account_user.dart';
+import 'package:eventmanagement/Component/form_reset_password.dart';
 import 'package:eventmanagement/Component/icon_crud.dart';
 import 'package:eventmanagement/Component/listtile.dart';
 import 'package:eventmanagement/Component/summary_card.dart';
@@ -164,14 +166,12 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
   final Map<String, String> roleLabels = {
     'Tất cả': 'Tất cả',
     'USER': 'Sinh viên',
-    'MANAGER_DEPARTMENT': 'Quản lí sự kiện khoa',
-    'MANAGER_ENTIRE': 'Quản lí sự kiện toàn trường',
+    'MANAGER_DEPARTMENT': 'Quét QR cho sự kiện khoa',
   };
   final Map<String, String> roleTranslations = {
     'ADMIN_ENTIRE': 'Quản lí tổng',
     'ADMIN_DEPARTMENT': 'Quản lí khoa',
-    'MANAGER_DEPARTMENT': 'Quản lí sự kiện khoa',
-    'MANAGER_ENTIRE': 'Quản lí sự kiện toàn trường',
+    'MANAGER_DEPARTMENT': 'Quét QR cho sự kiện khoa',
     'USER': 'Sinh viên',
   };
   void _navigateToPage(int index) {
@@ -189,6 +189,29 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
         return FormAddAccountUserDialog(
           callback: () {
             _fetchUsers();
+          },
+        );
+      },
+    );
+  }
+  void _showAddAccountManagerDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FormAddAccountManagerDialog(
+          callback: () {
+            _fetchUsers();
+          },
+        );
+      },
+    );
+  }
+  void _showResetPassword() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FormResetPasswordDialog(
+          callback: () {
           },
         );
       },
@@ -220,9 +243,10 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
     return _users.where((user) {
       bool matchesFullName = user.fullName.toLowerCase().contains(searchQuery);
       bool matchesRole = _selectedRole == 'Tất cả' || (user.roles.contains(_selectedRole));
-      bool matchesCourse = _selectedCourse == 'Toàn Khóa' ||
-          user.classId.substring(0, 2) == _selectedCourse.substring(1);
-      bool notAdmin = !user.roles.contains('ADMIN_ENTIRE');
+      bool matchesCourse = (_selectedCourse == 'Toàn Khóa' ||
+          (user.classId.length >= 2 && _selectedCourse.length >= 2 &&
+              (user.classId.startsWith('0') ? user.classId[1] == _selectedCourse[1] : user.classId.substring(0, 2) == _selectedCourse.substring(1))));
+      bool notAdmin = !user.roles.contains('ADMIN_ENTIRE') && !user.roles.contains('ADMIN_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE');
       return matchesFullName && matchesRole && notAdmin && matchesCourse;
     }).toList();
   }
@@ -269,40 +293,43 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
                   fontSize: 16,
                   color: Colors.black,
                 ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('ADMIN_DEPARTMENT') && !user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Tổng số sự kiện đã đăng ký: ${user.totalEventsRegistered}',
                     fontSize: 16,
                     color: Colors.black,
                   ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('ADMIN_DEPARTMENT') && !user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Điểm rèn luyện: $trainingPoints',
                     fontSize: 16,
                     color: Colors.black,
                   ),
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Giới tính: ${user.gender}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Email: ${user.email}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                 CustomTextList(
                   text: 'Sđt: ${user.phone?.isNotEmpty == true ? user.phone : 'Chưa cập nhật'}',
                   fontSize: 16,
                   color: Colors.black,
                 ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Địa chỉ: ${user.address?.isNotEmpty == true ? user.address : 'Chưa cập nhật'}',
                     fontSize: 16,
                     color: Colors.black,
                   ),
-                if (!user.roles.contains('ADMIN_DEPARTMENT'))
+                if (!user.roles.contains('MANAGER_DEPARTMENT') && !user.roles.contains('MANAGER_ENTIRE'))
                   CustomTextList(
                     text: 'Lớp: ${user.classId}',
                     fontSize: 16,
@@ -701,7 +728,8 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
                           ),
                           Row(
                             children: [
-                              CustomElevatedButtonCRUD(onPressed: _showAddAccountDialog, color: Colors.white, icon: "assets/images/importExcel.png", textColor: Colors.green,),
+                              CustomElevatedButtonCRUD(onPressed: _showResetPassword, color: Colors.white, icon: "assets/images/reset_password.png", textColor: Colors.green,),
+                              CustomElevatedButtonCRUD(onPressed: _showAddAccountManagerDialog, color: Colors.white, icon: "assets/images/add_manager.png", textColor: Colors.green,),
                               CustomElevatedButtonCRUD(onPressed: _showAddAccountDialog, color: Colors.white, icon: "assets/images/add.png", textColor: Colors.green,),
                             ],
                           ),
@@ -745,9 +773,9 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
                                             if (user.roles.contains('ADMIN_DEPARTMENT')) {
                                               roleText = 'Quản lí khoa';
                                             } else if (user.roles.contains('MANAGER_DEPARTMENT')) {
-                                              roleText = 'Quản lí sự kiện khoa';
+                                              roleText = 'Quét QR sự kiện cho khoa';
                                             } else if (user.roles.contains('MANAGER_ENTIRE')) {
-                                              roleText = 'Quản lí sự kiện toàn trường';
+                                              roleText = 'Quét QR sự kiện cho toàn trường';
                                             } else {
                                               roleText = 'Sinh viên';
                                             }
@@ -799,13 +827,14 @@ class DashboardDepartmentScreenState extends State<DashboardDepartmentScreen> {
                                                   trailing: Row(
                                                     mainAxisSize: MainAxisSize.min,
                                                     children: [
-                                                      IconCRUD(
-                                                        onPressed: () {
-                                                          _showEditAccountDialog(user);
-                                                        },
-                                                        icon: Icons.edit,
-                                                        color: Colors.orange,
-                                                      ),
+                                                      if (!user.roles.contains('MANAGER_DEPARTMENT'))
+                                                        IconCRUD(
+                                                          onPressed: () {
+                                                            _showEditAccountDialog(user);
+                                                          },
+                                                          icon: Icons.edit,
+                                                          color: Colors.orange,
+                                                        ),
                                                     ],
                                                   ),
                                                 ),

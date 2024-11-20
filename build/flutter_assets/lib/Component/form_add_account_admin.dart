@@ -67,10 +67,30 @@ class FormAddAccountDialogState extends State<FormAddAccountDialog> {
   }
 
 
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang tạo tài khoản, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _registerUser() async {
     setState(() {
       _isLoading = true;
     });
+
+    _showLoadingDialog(context);
 
     try {
       String userName = _userNameController.text;
@@ -81,30 +101,33 @@ class FormAddAccountDialogState extends State<FormAddAccountDialog> {
       String? gender = _selectedGender;
 
       if (userName.isEmpty || email.isEmpty || password.isEmpty || fullName.isEmpty || department == null || gender == null) {
+        Navigator.of(context).pop(); // Close the loading dialog
         showWarningDialog(context, 'Lỗi', 'Có dữ liệu còn bỏ trống chưa điền !', Icons.warning, Colors.red);
         return;
       }
 
       if (userName.length < 6) {
+        Navigator.of(context).pop(); // Close the loading dialog
         showWarningDialog(context, 'Lỗi', 'Tài khoản phải chứa ít nhất 6 kí tự', Icons.warning, Colors.red);
         return;
       }
 
       if (!RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$').hasMatch(email)) {
+        Navigator.of(context).pop(); // Close the loading dialog
         showWarningDialog(context, 'Lỗi', 'Email sai định dạng', Icons.warning, Colors.red);
         return;
       }
 
       bool emailExists = await InfoAccountService().checkEmailExist(email);
       if (emailExists) {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop(); // Close the loading dialog
         showWarningDialog(context, 'Lỗi', 'Email đã tồn tại', Icons.warning, Colors.red);
         return;
       }
 
       bool userNameExists = await InfoAccountService().checkUserNameExist(userName);
       if (userNameExists) {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop(); // Close the loading dialog
         showWarningDialog(context, 'Lỗi', 'Tài khoản đã tồn tại', Icons.warning, Colors.red);
         return;
       }
@@ -119,16 +142,16 @@ class FormAddAccountDialogState extends State<FormAddAccountDialog> {
       );
 
       if (user != null) {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop(); // Close the loading dialog
         showWarningDialog(context, 'Thành công', 'Tạo tài khoản thành công', Icons.check_circle, Colors.green);
         Future.delayed(Duration(milliseconds: 800), () {
-          // ignore: use_build_context_synchronously
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(); // Close the success dialog
+          Navigator.of(context).pop(); // Close the form dialog
           widget.callback();
         });
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop(); // Close the loading dialog
       showWarningDialog(context, 'Lỗi', 'Failed to register user: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {

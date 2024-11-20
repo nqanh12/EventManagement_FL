@@ -7,7 +7,8 @@ import 'package:go_router/go_router.dart';
 class ChangeStoreHistoryScreen extends StatefulWidget {
   final String eventId;
   final String eventName;
-  const ChangeStoreHistoryScreen({super.key, required this.eventId, required this.eventName});
+  final DateTime dateEnd;
+  const ChangeStoreHistoryScreen({super.key, required this.eventId, required this.eventName, required this.dateEnd});
 
   @override
   ChangeStoreHistoryScreenState createState() => ChangeStoreHistoryScreenState();
@@ -31,12 +32,12 @@ class ChangeStoreHistoryScreenState extends State<ChangeStoreHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: CustomText(text: "Lịch sử thay đổi", fontSize: 24, color: Colors.white),
+        title: CustomText(text: "Lịch sử thay đổi của ${widget.eventName}", fontSize: 24, color: Colors.white),
         backgroundColor: Color(0xFF2E3034),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            context.go('/participant_list/${widget.eventId}/${widget.eventName}');
+            context.go('/participant_list/${widget.eventId}/${widget.eventName}/${widget.dateEnd}');
           },
         ),
       ),
@@ -84,7 +85,7 @@ class ChangeStoreHistoryScreenState extends State<ChangeStoreHistoryScreen> {
                             color: Colors.black,
                           ),
                           CustomTextList(
-                            text: 'Ngày thay đổi: ${DateFormat('dd/MM/yyyy HH:mm').format(change.createdDate)}',
+                            text: 'Ngày thay đổi: ${DateFormat('dd/MM/yyyy HH:mm').format(change.createdDate.add(Duration(hours: 7)))}',
                             fontSize: 14,
                             color: Colors.black54,
                           ),

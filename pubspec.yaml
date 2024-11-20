@@ -47,6 +47,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   go_router: ^14.6.0
+  path_provider: ^2.0.11
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -86,6 +87,9 @@ flutter:
     - assets/images/importExcel.png
     - assets/images/excel.png
     - assets/images/backgroundhufi.png
+    - assets/images/import.png
+    - assets/images/add_manager.png
+    - assets/images/reset_password.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

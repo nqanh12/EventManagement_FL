@@ -111,18 +111,20 @@ class MyApp extends StatelessWidget {
                       ),
                     ),
                     GoRoute(
-                      path: '/participant_list/:eventId/:eventName',
+                      path: '/participant_list/:eventId/:eventName/:dateEnd',
                       builder: (context, state) {
                         final eventId = state.pathParameters['eventId']!;
                         final eventName = state.pathParameters['eventName']!;
-                        return ParticipantListScreen(eventId : eventId, eventName: eventName);
+                        final dateEnd = DateTime.parse(state.pathParameters['dateEnd']!);
+                        return ParticipantListScreen(eventId: eventId, eventName: eventName, dateEnd: dateEnd);
                       },
                       pageBuilder: (context, state) {
                         final eventId = state.pathParameters['eventId']!;
                         final eventName = state.pathParameters['eventName']!;
+                        final dateEnd = DateTime.parse(state.pathParameters['dateEnd']!);
                         return MaterialPage(
                           key: state.pageKey,
-                          child: ParticipantListScreen(eventId : eventId, eventName: eventName),
+                          child: ParticipantListScreen(eventId: eventId, eventName: eventName, dateEnd: dateEnd),
                           name: 'Participant Event',
                         );
                       },
@@ -155,46 +157,51 @@ class MyApp extends StatelessWidget {
                       ),
                     ),
                     GoRoute(
-                      path: '/feedback/:eventId/:eventName',
+                      path: '/feedback/:eventId/:eventName/:dateEnd',
                       builder: (context, state) {
                         final eventId = state.pathParameters['eventId']!;
                         final eventName = state.pathParameters['eventName']!;
-                        return FeedbackListScreen(eventId: eventId, eventName: eventName);
+                        final dateEnd = DateTime.parse(state.pathParameters['dateEnd']!);
+                        return FeedbackListScreen(eventId: eventId, eventName: eventName, dateEnd: dateEnd);
                       },
                       pageBuilder: (context, state) {
                         final eventId = state.pathParameters['eventId']!;
                         final eventName = state.pathParameters['eventName']!;
+                        final dateEnd = DateTime.parse(state.pathParameters['dateEnd']!);
                         return MaterialPage(
                           key: state.pageKey,
-                          child: FeedbackListScreen(eventId: eventId, eventName: eventName),
+                          child: FeedbackListScreen(eventId: eventId, eventName: eventName, dateEnd: dateEnd),
                           name: 'Feedback',
                         );
                       },
                     ),
                     GoRoute(
-                      path: '/historyChange/:eventId/:eventName',
+                      path: '/historyChange/:eventId/:eventName/:dateEnd',
                       builder: (context, state) {
                         final eventId = state.pathParameters['eventId']!;
                         final eventName = state.pathParameters['eventName']!;
-                        return ChangeStoreHistoryScreen(eventId: eventId, eventName: eventName);
+                        final dateEnd = DateTime.parse(state.pathParameters['dateEnd']!);
+                        return ChangeStoreHistoryScreen(eventId: eventId, eventName: eventName, dateEnd: dateEnd);
                       },
                       pageBuilder: (context, state) {
                         final eventId = state.pathParameters['eventId']!;
                         final eventName = state.pathParameters['eventName']!;
+                        final dateEnd = DateTime.parse(state.pathParameters['dateEnd']!);
                         return MaterialPage(
                           key: state.pageKey,
-                          child: ChangeStoreHistoryScreen(eventId: eventId, eventName: eventName),
+                          child: ChangeStoreHistoryScreen(eventId: eventId, eventName: eventName, dateEnd: dateEnd),
                           name: 'Lịch sử thay đổi',
                         );
                       },
                     ),
                     GoRoute(
-                      path: '/participant-event/participant-list',
+                      path: '/participant-event/participant-lis/:dateEnd',
                       builder: (context, state) {
                         final args = state.extra as Map<String, dynamic>;
                         return ParticipantListScreen(
                           eventId: args['eventId'],
                           eventName: args['eventName'],
+                          dateEnd: args['dateEnd'],
                         );
                       },
                       pageBuilder: (context, state) {
@@ -204,6 +211,7 @@ class MyApp extends StatelessWidget {
                           child: ParticipantListScreen(
                             eventId: args['eventId'],
                             eventName: args['eventName'],
+                            dateEnd: args['dateEnd'],
                           ),
                           name: 'Participant List',
                         );

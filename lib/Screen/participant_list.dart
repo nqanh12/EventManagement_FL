@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:eventmanagement/Component/button_access.dart';
 import 'package:eventmanagement/Component/diglog_warning.dart';
 import 'package:eventmanagement/Component/summary_card.dart';
@@ -8,17 +9,20 @@ import 'package:eventmanagement/Component/text_font_list.dart';
 import 'package:eventmanagement/Service/localhost.dart';
 import 'package:eventmanagement/Service/info_account.dart';
 import 'package:eventmanagement/Until/format_date.dart';
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:eventmanagement/Component/event_card.dart';
 import 'package:eventmanagement/Class/event.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ParticipantListScreen extends StatefulWidget {
   final String eventId;
   final String eventName;
-  const ParticipantListScreen({super.key, required this.eventId, required this.eventName});
+  final DateTime dateEnd;
+  const ParticipantListScreen({super.key, required this.eventId, required this.eventName, required this.dateEnd});
 
   @override
   ParticipantListScreenState createState() => ParticipantListScreenState();
@@ -154,7 +158,7 @@ class ParticipantListScreenState extends State<ParticipantListScreen> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['code'] == 1000) {
-        showWarningDialog(context, "Success", "Training points calculated successfully", Icons.check_circle, Colors.green);
+        showWarningDialog(context, "Thông báo", "Tính điểm hoàn tất", Icons.check_circle, Colors.green);
 
         // Call the additional API for each selected student
         for (var userName in _selectedStudents) {
@@ -240,7 +244,39 @@ class ParticipantListScreenState extends State<ParticipantListScreen> {
       }
     });
   }
+  void _exportToExcel() async {
+    var excel = Excel.createExcel();
+    Sheet sheetObject = excel['Sheet1'];
 
+    // Add header row
+    sheetObject.appendRow(['MSSV', 'Họ và tên', 'Lớp', 'Trạng thái check - in', 'Giờ check - in', 'Trạng thái check - out', 'Giờ check - out']);
+
+    // Add data rows
+    for (var student in _students) {
+      sheetObject.appendRow([
+        student.userName,
+        student.fullName ?? 'N/A',
+        student.classId ?? 'N/A',
+        student.checkInStatus ? 'Hoàn thành' : 'Chưa hoàn thành',
+        student.checkInTime != null ? DateFormatUtil.formatDateTime(student.checkInTime!.add(const Duration(hours: 7))) : 'N/A',
+        student.checkOutStatus ? 'Hoàn thành' : 'Chưa hoàn thành',
+        student.checkOutTime != null ? DateFormatUtil.formatDateTime(student.checkOutTime!.add(const Duration(hours: 7))) : 'N/A',
+      ]);
+    }
+
+    // Save the file
+    var fileBytes = excel.save();
+    if (fileBytes != null) {
+      // Use the path_provider package to get the directory to save the file
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/students.xlsx';
+      final file = File(path);
+      await file.writeAsBytes(fileBytes, flush: true);
+
+      // Show a success message
+      showWarningDialog(context, "Thông báo", "Xuất file excel thành công $path", Icons.check_circle, Colors.green);
+    }
+  }
   void _toggleStudentSelection(String userName, bool? value) {
     setState(() {
       if (value ?? false) {
@@ -358,8 +394,10 @@ class ParticipantListScreenState extends State<ParticipantListScreen> {
                             ),
                             CustomElevatedButton(
                               onPressed: () {
-                                if (_students.length == _countConfirmedStudents()) {
-                                  showWarningDialog(context, "Error", "Tất cả sinh viên đã được tính điểm hoàn tất", Icons.error, Colors.red);
+                                if (DateTime.now().isBefore(widget.dateEnd)) {
+                                  showWarningDialog(context, "Lỗi", "Sự kiện chưa kết thúc, không thể tính điểm", Icons.error, Colors.red);
+                                }else if (_students.length == _countConfirmedStudents()) {
+                                  showWarningDialog(context, "Lỗi", "Tất cả sinh viên đã được tính điểm hoàn tất", Icons.error, Colors.red);
                                 } else {
                                   _calculateTrainingPoints();
                                 }
@@ -373,6 +411,16 @@ class ParticipantListScreenState extends State<ParticipantListScreen> {
                           ],
                         ),
                       ),
+                      Container(
+                        margin: const EdgeInsets.only(right: 20),
+                        child:CustomElevatedButton(
+                            onPressed: _exportToExcel,
+                            text: "Xuất Excel",
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            icon: Icons.file_download,
+                            textColor: Colors.black,
+                            ),),
+                      const SizedBox(height: 20),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -393,7 +441,7 @@ class ParticipantListScreenState extends State<ParticipantListScreen> {
                           children: [
                             CustomElevatedButton(
                               onPressed: () {
-                                context.go('/historyChange/${widget.eventId}/${widget.eventName}');
+                                context.go('/historyChange/${widget.eventId}/${widget.eventName}/${widget.dateEnd}');
                               },
                               text: "Lịch sử",
                               color: const Color.fromARGB(255, 255, 255, 255),
@@ -403,7 +451,7 @@ class ParticipantListScreenState extends State<ParticipantListScreen> {
                             const SizedBox(height: 10),
                             CustomElevatedButton(
                               onPressed: () {
-                                context.go('/feedback/${widget.eventId}/${widget.eventName}');
+                                context.go('/feedback/${widget.eventId}/${widget.eventName}/${widget.dateEnd}');
                               },
                               text: "Phản hồi",
                               color: const Color.fromARGB(255, 255, 255, 255),

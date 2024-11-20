@@ -1,12 +1,13 @@
-// lib/Component/search_event.dart
 import 'package:flutter/material.dart';
 
 class SearchEvent extends StatelessWidget {
+  final String textSearch;
   final TextEditingController searchController;
   final ValueChanged<String> onChanged;
 
   const SearchEvent({
     super.key,
+    required this.textSearch,
     required this.searchController,
     required this.onChanged,
   });
@@ -34,7 +35,7 @@ class SearchEvent extends StatelessWidget {
               controller: searchController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                hintText: 'Tìm kiếm theo tên sự kiện',
+                hintText: textSearch,
                 hintStyle: TextStyle(color: Colors.black.withOpacity(0.2)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),

@@ -20,7 +20,6 @@ class FormAddAccountDialogState extends State<FormAddAccountUserDialog> {
   final _emailController = TextEditingController();
   final _fullNameController = TextEditingController();
   final _classIdController = TextEditingController();
-  bool _isPasswordVisible = false;
   bool _isLoading = false;
   String? _selectedGender = 'Nam';
   final List<String> _genders = ['Nam', 'Nữ'];
@@ -33,12 +32,28 @@ class FormAddAccountDialogState extends State<FormAddAccountUserDialog> {
     _classIdController.dispose();
     super.dispose();
   }
-
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text("Đang tạo tài khoản, vui lòng đợi..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Future<void> _registerUser() async {
     setState(() {
       _isLoading = true;
     });
-
+    _showLoadingDialog(context);
     try {
       String userName = _userNameController.text;
       String email = _emailController.text;
@@ -85,16 +100,17 @@ class FormAddAccountDialogState extends State<FormAddAccountUserDialog> {
       );
 
       if (user != null) {
-        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
         showWarningDialog(context, 'Thành công', 'Tạo tài khoản thành công', Icons.check_circle, Colors.green);
         Future.delayed(Duration(milliseconds: 800), () {
           // ignore: use_build_context_synchronously
+          Navigator.of(context).pop();
           Navigator.of(context).pop();
           widget.callback();
         });
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showWarningDialog(context, 'Lỗi', 'Failed to register user: ${e.toString()}', Icons.warning, Colors.red);
     } finally {
       setState(() {
@@ -115,7 +131,7 @@ class FormAddAccountDialogState extends State<FormAddAccountUserDialog> {
           Icon(Icons.person_add, color: Colors.blueAccent),
           const SizedBox(width: 10),
           CustomText(
-            text: 'Thêm tài khoản mới',
+            text: 'Thêm tài khoản sinh viên mới',
             fontSize: 18,
             color: Colors.blueAccent,
           )

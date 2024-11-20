@@ -79,8 +79,9 @@ class EventManagementScreenState extends State<EventManagementScreen> {
   void _fetchCourses() async {
     try {
       final courses = await CourseService().getAllCourses();
+      final filteredCourses = courses.where((course) => course.courseId != 'K0').toList().reversed.toList();
       setState(() {
-        _courses = courses;
+        _courses = filteredCourses;
       });
     } catch (e) {
       // ignore: use_build_context_synchronously
@@ -308,7 +309,7 @@ void editEvent(Event event) {
                         child: DropdownButton<String>(
                           borderRadius: BorderRadius.circular(15),
                           value: _selectedYear,
-                          items: <String>['Tất cả', '2023', '2024', '2025']
+                          items: <String>['Tất cả', ...List.generate(DateTime.now().year - 2020, (index) => (DateTime.now().year - index).toString())]
                               .map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -524,76 +525,83 @@ void editEvent(Event event) {
                                           opacity: isPastEvent ? 0.5 : 1.0,
                                           child: GestureDetector(
                                             onTap: () {
-                                              context.go('/participant_list/${event.eventId}/${event.name}');
+                                              context.go('/participant_list/${event.eventId}/${event.name}/${event.dateEnd}');
                                             },
-                                            child: EventCard(
-                                              listTile: ListTile(
-                                                leading: CircleAvatar(
-                                                  backgroundColor: Color(0xFF2E3034),
-                                                  child: CustomTextList(
-                                                    text: event.name[0],
-                                                    fontSize: 24,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
+                                            child: Opacity(
+                                              opacity: event.dateStart.isAfter(DateTime.now()) || event.dateEnd.isBefore(DateTime.now()) ? 0.5 : 1.0,
+                                              child: EventCard(
+                                                listTile: ListTile(
+                                                  leading: Icon(
+                                                    Icons.circle,
+                                                    color: event.dateStart.isAfter(DateTime.now())
+                                                        ? Colors.yellow
+                                                        : (event.dateEnd.isBefore(DateTime.now()) ? Colors.red : Colors.green),
                                                   ),
-                                                ),
-                                                title: CustomTextList(
-                                                  text: event.name,
-                                                  fontSize: 24,
-                                                  color: Colors.black,
-                                                ),
-                                                subtitle: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    CustomTextList(
-                                                      text: "Người chủ trì: ${event.managerName}",
-                                                      fontSize: 16,
-                                                      color: Colors.black,
-                                                    ),
-                                                    CustomTextList(
-                                                      text: "Ngày bắt đầu: ${DateFormatUtil.formatDateTime(event.dateStart.add(const Duration(hours: 7)))}",
-                                                      fontSize: 16,
-                                                      color: Colors.black,
-                                                    ),
-                                                    CustomTextList(
-                                                      text: "Ngày kết thúc: ${DateFormatUtil.formatDateTime(event.dateEnd.add(const Duration(hours: 7)))}",
-                                                      fontSize: 16,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ],
-                                                ),
-                                                trailing: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    IconCRUD(
-                                                      onPressed: () {
-                                                        editEvent(event);
-                                                      },
-                                                      icon: Icons.edit,
-                                                      color: Colors.orange,
-                                                    ),
-                                                    const SizedBox(width: 50),
-                                                    IconCRUD(
-                                                      onPressed: () async {
-                                                        final showLogDelete = ShowLogDeleteState();
-                                                        await showLogDelete.showConfirmationDialog(
-                                                          context: context,
-                                                          title: 'Xác nhận xóa',
-                                                          content: 'Bạn có chắc chắn muốn xóa sự kiện này không?',
-                                                          onConfirm: () async {
-                                                            await Future.wait([
-                                                              UserService().deleteEventAllUsers(event.eventId),
-                                                              CrudEventService().deleteEvent(event.eventId),
-                                                            ]);
-                                                            _fetchEvents();
-                                                            _filterEvents();
-                                                          },
-                                                        );
-                                                      },
-                                                      icon: Icons.delete,
-                                                      color: Colors.red,
-                                                    ),
-                                                  ],
+                                                  title: CustomTextList(
+                                                    text: event.name,
+                                                    fontSize: 24,
+                                                    color: Colors.black,
+                                                  ),
+                                                  subtitle: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      CustomTextList(
+                                                        text: "Người chủ trì: ${event.managerName}",
+                                                        fontSize: 16,
+                                                        color: Colors.black,
+                                                      ),
+                                                      CustomTextList(
+                                                        text: "Ngày bắt đầu: ${DateFormatUtil.formatDateTime(event.dateStart.add(const Duration(hours: 7)))}",
+                                                        fontSize: 16,
+                                                        color: Colors.black,
+                                                      ),
+                                                      CustomTextList(
+                                                        text: "Ngày kết thúc: ${DateFormatUtil.formatDateTime(event.dateEnd.add(const Duration(hours: 7)))}",
+                                                        fontSize: 16,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  trailing: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Visibility(
+                                                        visible: event.dateEnd.isAfter(DateTime.now()),
+                                                        child: Row(
+                                                          children: [
+                                                            IconCRUD(
+                                                              onPressed: () {
+                                                                editEvent(event);
+                                                              },
+                                                              icon: Icons.edit,
+                                                              color: Colors.orange,
+                                                            ),
+                                                            const SizedBox(width: 50),
+                                                            IconCRUD(
+                                                              onPressed: () async {
+                                                                final showLogDelete = ShowLogDeleteState();
+                                                                await showLogDelete.showConfirmationDialog(
+                                                                  context: context,
+                                                                  title: 'Xác nhận xóa',
+                                                                  content: 'Bạn có chắc chắn muốn xóa sự kiện này không?',
+                                                                  onConfirm: () async {
+                                                                    await Future.wait([
+                                                                      UserService().deleteEventAllUsers(event.eventId),
+                                                                      CrudEventService().deleteEvent(event.eventId),
+                                                                    ]);
+                                                                    _fetchEvents();
+                                                                    _filterEvents();
+                                                                  },
+                                                                );
+                                                              },
+                                                              icon: Icons.delete,
+                                                              color: Colors.red,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),

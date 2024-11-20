@@ -1,28 +1,31 @@
-2024/11/19-13:58:37.452 14b0 Reusing MANIFEST C:\Users\chayb\AppData\Local\Temp\flutter_tools.1cd9b1ca\flutter_tools_chrome_device.3f852925\Default\Local Storage\leveldb/MANIFEST-000001
-2024/11/19-13:58:37.455 14b0 Recovering log #60
-2024/11/19-13:58:37.465 14b0 Reusing old log C:\Users\chayb\AppData\Local\Temp\flutter_tools.1cd9b1ca\flutter_tools_chrome_device.3f852925\Default\Local Storage\leveldb/000060.log 
-2024/11/19-13:58:37.468 14b0 Delete type=0 #3
-2024/11/19-13:58:37.468 14b0 Delete type=0 #4
-2024/11/19-13:58:37.469 14b0 Delete type=0 #15
-2024/11/19-13:58:37.469 14b0 Delete type=2 #17
-2024/11/19-13:58:37.469 14b0 Delete type=2 #19
-2024/11/19-13:58:37.469 14b0 Delete type=0 #19
-2024/11/19-13:58:37.469 14b0 Delete type=2 #20
-2024/11/19-13:58:37.469 14b0 Delete type=0 #20
-2024/11/19-13:58:37.488 14b0 Delete type=2 #21
-2024/11/19-13:58:37.489 14b0 Delete type=0 #23
-2024/11/19-13:58:37.489 14b0 Delete type=2 #24
-2024/11/19-13:58:37.489 14b0 Delete type=2 #37
-2024/11/19-13:58:37.489 14b0 Delete type=0 #38
-2024/11/19-13:58:37.489 14b0 Delete type=2 #39
-2024/11/19-13:58:37.489 14b0 Delete type=2 #41
-2024/11/19-13:58:37.489 14b0 Delete type=0 #42
-2024/11/19-13:58:37.489 14b0 Delete type=0 #44
-2024/11/19-13:58:37.489 14b0 Delete type=2 #45
-2024/11/19-13:58:37.489 14b0 Delete type=0 #47
-2024/11/19-13:58:37.489 14b0 Delete type=2 #49
-2024/11/19-13:58:37.490 14b0 Delete type=0 #51
-2024/11/19-13:58:37.490 14b0 Delete type=2 #52
-2024/11/19-13:58:37.490 14b0 Delete type=2 #55
-2024/11/19-13:58:37.490 14b0 Delete type=0 #56
-2024/11/19-13:58:37.490 14b0 Delete type=2 #57
+2024/11/20-15:18:09.182 3528 Reusing MANIFEST C:\Users\chayb\AppData\Local\Temp\flutter_tools.e406c6ba\flutter_tools_chrome_device.44c02c88\Default\Local Storage\leveldb/MANIFEST-000001
+2024/11/20-15:18:09.197 3528 Recovering log #60
+2024/11/20-15:18:09.206 3528 Reusing old log C:\Users\chayb\AppData\Local\Temp\flutter_tools.e406c6ba\flutter_tools_chrome_device.44c02c88\Default\Local Storage\leveldb/000060.log 
+2024/11/20-15:18:09.209 3528 Delete type=0 #3
+2024/11/20-15:18:09.209 3528 Delete type=0 #4
+2024/11/20-15:18:09.209 3528 Delete type=0 #15
+2024/11/20-15:18:09.209 3528 Delete type=2 #17
+2024/11/20-15:18:09.209 3528 Delete type=2 #19
+2024/11/20-15:18:09.209 3528 Delete type=0 #19
+2024/11/20-15:18:09.210 3528 Delete type=2 #20
+2024/11/20-15:18:09.210 3528 Delete type=0 #20
+2024/11/20-15:18:09.214 3528 Delete type=2 #21
+2024/11/20-15:18:09.214 3528 Delete type=0 #23
+2024/11/20-15:18:09.214 3528 Delete type=2 #24
+2024/11/20-15:18:09.215 3528 Delete type=2 #37
+2024/11/20-15:18:09.215 3528 Delete type=0 #38
+2024/11/20-15:18:09.215 3528 Delete type=2 #39
+2024/11/20-15:18:09.215 3528 Delete type=2 #41
+2024/11/20-15:18:09.215 3528 Delete type=0 #42
+2024/11/20-15:18:09.215 3528 Delete type=0 #44
+2024/11/20-15:18:09.216 3528 Delete type=2 #45
+2024/11/20-15:18:09.216 3528 Delete type=0 #47
+2024/11/20-15:18:09.216 3528 Delete type=2 #49
+2024/11/20-15:18:09.216 3528 Delete type=0 #51
+2024/11/20-15:18:09.217 3528 Delete type=2 #52
+2024/11/20-15:18:09.217 3528 Delete type=2 #55
+2024/11/20-15:18:09.217 3528 Delete type=0 #56
+2024/11/20-15:18:09.217 3528 Delete type=2 #57
+2024/11/20-16:52:37.696 3528 Level-0 table #64: started
+2024/11/20-16:52:37.711 3528 Level-0 table #64: 78402 bytes OK
+2024/11/20-16:52:37.716 3528 Delete type=0 #60
